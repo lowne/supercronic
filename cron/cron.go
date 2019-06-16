@@ -131,7 +131,7 @@ func monitorJob(ctx context.Context, job *crontab.Job, t0 time.Time, jobLogger *
 	}
 }
 
-func startFunc(wg *sync.WaitGroup, exitCtx context.Context, logger *logrus.Entry, overlapping bool, expression crontab.Expression, fn func(time.Time, *logrus.Entry)) {
+func startFunc(wg *sync.WaitGroup, exitCtx context.Context, logger *logrus.Entry, overlapping bool, schedule string, expression crontab.Expression, fn func(time.Time, *logrus.Entry)) {
 	wg.Add(1)
 
 	go func() {
@@ -181,7 +181,10 @@ func startFunc(wg *sync.WaitGroup, exitCtx context.Context, logger *logrus.Entry
 			} else {
 				runThisJob(cronIteration)
 			}
-
+			if schedule == crontab.Start {
+				logger.Info("run only once")
+				return
+			}
 			cronIteration++
 		}
 	}()
@@ -220,8 +223,7 @@ func StartJob(wg *sync.WaitGroup, cronCtx *crontab.Context, job *crontab.Job, ex
 			promMetrics.CronsFailCounter.With(jobPromLabels(job)).Inc()
 		}
 	}
-
-	startFunc(wg, exitCtx, cronLogger, overlapping, job.Expression, runThisJob)
+	startFunc(wg, exitCtx, cronLogger, overlapping, job.Schedule, job.CrontabLine.Expression, runThisJob)
 }
 
 func jobPromLabels(job *crontab.Job) prometheus.Labels {

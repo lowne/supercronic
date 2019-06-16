@@ -2,6 +2,7 @@ package crontab
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -10,6 +11,9 @@ import (
 	"github.com/gorhill/cronexpr"
 	"github.com/sirupsen/logrus"
 )
+
+const Start = "@start"
+const StartErr = "@start only allowed at the first position"
 
 var (
 	jobLineSeparator = regexp.MustCompile(`\S+`)
@@ -104,7 +108,10 @@ func ParseCrontab(reader io.Reader) (*Crontab, error) {
 		if err != nil {
 			return nil, err
 		}
-
+		if position != 0 && jobLine.Schedule == Start {
+			err = errors.New(StartErr)
+			return nil, err
+		}
 		jobs = append(jobs, &Job{CrontabLine: *jobLine, Position: position})
 		position++
 	}
