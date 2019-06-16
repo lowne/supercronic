@@ -2,6 +2,20 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:1d25d84868ec9840f0ca7ff45c06496b21d59f6ecebe6d908daf576add962d49"
+  name = "github.com/aptible/supercronic"
+  packages = [
+    "cron",
+    "crontab",
+    "log/hook",
+    "prometheus_metrics",
+  ]
+  pruneopts = ""
+  revision = "acd1b3809b2f3c46968a94854dd4d762f58bbe9a"
+  source = "github.com/dmaj/supercronic"
+
+[[projects]]
   digest = "1:0d3deb8a6da8ffba5635d6fb1d2144662200def6c9d82a35a6d05d6c2d4a48f9"
   name = "github.com/beorn7/perks"
   packages = ["quantile"]
@@ -164,6 +178,10 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/aptible/supercronic/cron",
+    "github.com/aptible/supercronic/crontab",
+    "github.com/aptible/supercronic/log/hook",
+    "github.com/aptible/supercronic/prometheus_metrics",
     "github.com/evalphobia/logrus_sentry",
     "github.com/gorhill/cronexpr",
     "github.com/prometheus/client_golang/prometheus",

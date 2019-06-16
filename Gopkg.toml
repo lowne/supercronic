@@ -27,6 +27,11 @@
   source = "github.com/krallin/cronexpr"
 
 [[constraint]]
+  name = "github.com/aptible/supercronic"
+  branch = "master"
+  source = "github.com/dmaj/supercronic"
+
+[[constraint]]
   name = "github.com/sirupsen/logrus"
   version = "~1.0.0"
 
