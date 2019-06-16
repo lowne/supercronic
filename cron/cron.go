@@ -111,6 +111,7 @@ func runJob(cronCtx *crontab.Context, command string, jobLogger *logrus.Entry) e
 
 func monitorJob(ctx context.Context, job *crontab.Job, t0 time.Time, jobLogger *logrus.Entry, overlapping bool, promMetrics *prometheus_metrics.PrometheusMetrics) {
 	t := t0
+	var cntr int
 
 	for {
 		t = job.Expression.Next(t)
@@ -121,10 +122,18 @@ func monitorJob(ctx context.Context, job *crontab.Job, t0 time.Time, jobLogger *
 			if overlapping {
 				m = "overlapping jobs"
 			}
-
-			jobLogger.Warnf("%s: job is still running since %s (%s elapsed)", m, t0, t.Sub(t0))
-
+			// Disable logging for@start
+			if job.Schedule != crontab.Start {
+				jobLogger.Warnf("%s: job is still running since %s (%s elapsed)", m, t0, t.Sub(t0))
+			} else {
+				cntr++
+				if cntr >= 10 {
+					cntr = 0
+					jobLogger.Infof("%s: job is still running since %s (%s elapsed)", "@start", t0, t.Sub(t0))
+				}
+			}
 			promMetrics.CronsDeadlineExceededCounter.With(jobPromLabels(job)).Inc()
+
 		case <-ctx.Done():
 			return
 		}
@@ -176,11 +185,17 @@ func startFunc(wg *sync.WaitGroup, exitCtx context.Context, logger *logrus.Entry
 				fn(nextRun, jobLogger)
 			}
 
+			// No overlapping for @start
+			if schedule == crontab.Start {
+				overlapping = false
+			}
+
 			if overlapping {
 				go runThisJob(cronIteration)
 			} else {
 				runThisJob(cronIteration)
 			}
+
 			if schedule == crontab.Start {
 				logger.Info("run only once")
 				return
