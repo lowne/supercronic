@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/gorhill/cronexpr"
+	"github.com/dmaj/cronexpr"
 	"github.com/sirupsen/logrus"
 )
 

@@ -73,16 +73,10 @@ Note: If you are unsure which binary is right for you, try
 
 You can also build Supercronic from source.
 
-Supercronic uses `dep` for dependency management, so you'll need to [install
-dep][dep] first.
-
-Then, fetch Supercronic, install its dependencies, then install it:
-
 ```
-go get -d github.com/aptible/supercronic
-cd "${GOPATH}/src/github.com/aptible/supercronic"
-dep ensure -vendor-only
-go install
+git clone --depth=1 https://github.com/lowne/supercronic
+cd supercronic
+go build
 ```
 
 
